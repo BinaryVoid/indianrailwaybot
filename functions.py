@@ -2,54 +2,8 @@ from urllib2 import urlopen
 import config
 import json
 import telepot
-<<<<<<< HEAD
 
 #########VARIABLES##############
-=======
-pnrdata = {
-    "train_num": "12627",
-    "from_station": {
-        "name": "BURHANPUR",
-        "code": "BAU"
-    },
-    "error": False,
-    "boarding_point": {
-        "name": "BURHANPUR",
-        "code": "BAU"
-    },
-    "train_start_date": {
-        "year": 2017,
-        "month": 2,
-        "day": 9
-    },
-    "failure_rate": 0.8064516129032258,
-    "passengers": [
-        {
-            "coach_position": 0,
-            "booking_status": "S7,28,GN",
-            "current_status": "CNF",
-            "no": 1
-        }
-    ],
-    "reservation_upto": {
-        "name": "NEW DELHI",
-        "code": "NDLS"
-    },
-    "total_passengers": 1,
-    "pnr": "4539357633",
-    "chart_prepared": "N",
-    "to_station": {
-        "name": "NEW DELHI",
-        "code": "NDLS"
-    },
-    "train_name": "KARNATAKA EXP",
-    "response_code": 200,
-    "class": "SL",
-    "doj": "10-2-2017"
-}
-#########VARIABLES##############
-pnr_list = []
->>>>>>> 41aa7ddfaa7584caf4f668b013fafa65243aa160
 
 site = 'http://api.railwayapi.com/'
 bot = telepot.Bot(config.telegram_key)
@@ -106,22 +60,19 @@ The right format is:
 Try /help for more
 """
 
-<<<<<<< HEAD
 	if len(msg['text'].split(" ")) != 2:
 		bot.sendMessage(msg['chat']['id'], invalid_msg, parse_mode = 'Markdown')
 		return 0
+	
 	pnr = msg['text'].split(" ")[1]
 	response = urlopen(site + 'pnr_status/pnr/' + pnr + '/apikey/' + railkey)
 	data = json.load(response)
-=======
-	#if len(msg['text'].split(" ")) != 2:
-	#	bot.sendMessage(msg['chat']['id'], invalid_msg, parse_mode = 'Markdown')
-	#	return 0
-	#pnr = msg['text'].split(" ")[1]
-	#response = urlopen(site + 'pnr_status/pnr/' + pnr + '/apikey/' + railkey)
-	#data = json.load(response)
->>>>>>> 41aa7ddfaa7584caf4f668b013fafa65243aa160
-	data = pnrdata
+	if data['response_code'] == 410:
+		bot.sendMessage(msg['chat']['id'], "Flushed PNR or PNR not yet generated", parse_mode = 'Markdown')
+		return 0
+	if data['response_code'] == 404:
+		bot.sendMessage(msg['chat']['id'], "Source not responding. Please double check your PNR. If it still doesn't work, try after some time.", parse_mode = 'Markdown')
+		return 0	
 	pnr = data['pnr']
 	train_name = data['train_name']
 	train_num = data['train_num']
@@ -156,7 +107,4 @@ Try /help for more
 		bot.sendMessage(telepot.glance(msg)[2], final_response, parse_mode = 'Markdown')
 	except:
 		bot.sendMessage(telepot.glance(msg)[2], "PNR flushed", parse_mode = 'Markdown')
-<<<<<<< HEAD
 
-=======
->>>>>>> 41aa7ddfaa7584caf4f668b013fafa65243aa160
